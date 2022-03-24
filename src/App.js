@@ -1,23 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import logo from "./logo.svg";
+import "./App.css";
+import {
+  Center,
+  Card,
+  TextInput,
+  Button,
+  Group,
+  Box,
+  PasswordInput,
+} from "@mantine/core";
+import { useForm } from "@mantine/form";
 
 function App() {
+  const form = useForm({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+
+    validate: {
+      email: (value) => (/^\S+@\S+$/.test(value) ? null : "Invalid email"),
+    },
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="signin-card-wrapper">
+      <Card shadow="sm" p="lg">
+        <Box sx={{ maxWidth: 300 }} mx="auto">
+          <form onSubmit={form.onSubmit((values) => console.log(values))}>
+            <TextInput
+              required
+              label="Email"
+              placeholder="your@email.com"
+              {...form.getInputProps("email")}
+            />
+            <PasswordInput
+              required
+              label="Password"
+              placeholder="password"
+              {...form.getInputProps("password")}
+            />
+
+            <Group position="center" mt="md">
+              <Button variant="light" color="pink" size="md">
+                Signin
+              </Button>
+              <Button variant="light" color="grape" size="md">
+                Signup
+              </Button>
+            </Group>
+          </form>
+        </Box>
+      </Card>
     </div>
   );
 }
