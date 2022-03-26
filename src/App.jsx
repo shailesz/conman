@@ -1,3 +1,5 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./App.css";
 import {
   Card,
@@ -8,8 +10,18 @@ import {
   PasswordInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import axios from "axios";
 
 function App() {
+  const [isAuth] = React.useState(localStorage.getItem("jwtToken"));
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (isAuth) {
+      navigate("/home");
+    }
+  }, [isAuth]);
+
   const form = useForm({
     initialValues: {
       email: "",
@@ -21,11 +33,25 @@ function App() {
     },
   });
 
+  const submitForm = async (values) => {
+    const url = "http://localhost:4000/signin";
+    try {
+      const {
+        data: {
+          data: { token },
+        },
+      } = await axios.post(url, values);
+      localStorage.setItem("jwtToken", token);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div className="signin-card-wrapper">
       <Card shadow="sm" p="lg">
         <Box sx={{ maxWidth: 300 }} mx="auto">
-          <form onSubmit={form.onSubmit((values) => console.log(values))}>
+          <form onSubmit={form.onSubmit(submitForm)}>
             <TextInput
               required
               label="Email"
@@ -40,7 +66,7 @@ function App() {
             />
 
             <Group position="center" mt="md">
-              <Button variant="light" color="pink" size="md">
+              <Button type variant="light" color="pink" size="md">
                 Signin
               </Button>
               <Button variant="light" color="grape" size="md">

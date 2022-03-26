@@ -1,11 +1,18 @@
 import React from "react";
-import { SquarePlus } from "tabler-icons-react";
+import { SquarePlus, Logout } from "tabler-icons-react";
 import { AppShell, Navbar, Header, Group, ActionIcon } from "@mantine/core";
 import MainLinks from "./MainLinks";
 import User from "./User";
 import { Logo } from "./Logo";
+import { getContacts } from "./services/contacts.service";
 
 function Home() {
+  React.useEffect(() => {
+    getContacts().then(({ data: { results } }) => {
+      console.log(results);
+    });
+  }, []);
+
   return (
     <AppShell
       padding="md"
@@ -32,9 +39,14 @@ function Home() {
         <Header height={60}>
           <Group sx={{ height: "100%" }} px={20} position="apart">
             <Logo />
-            <ActionIcon variant="default" onClick={() => {}} size={30}>
-              <SquarePlus size={16} />
-            </ActionIcon>
+            <Group sx={{ height: "100%" }} px={20} position="right">
+              <ActionIcon variant="default" onClick={() => {}} size={30}>
+                <SquarePlus size={16} />
+              </ActionIcon>
+              <ActionIcon variant="default" onClick={() => {}} size={30}>
+                <Logout size={16} />
+              </ActionIcon>
+            </Group>
           </Group>
         </Header>
       }
