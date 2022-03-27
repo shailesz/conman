@@ -1,13 +1,7 @@
 import React from "react";
-import {
-  GitPullRequest,
-  AlertCircle,
-  Messages,
-  Database,
-} from "tabler-icons-react";
 import { ThemeIcon, UnstyledButton, Group, Text } from "@mantine/core";
 
-function MainLink({ icon, color, label }) {
+function Contact({ icon, color, label, data, onClick = () => {} }) {
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -25,28 +19,17 @@ function MainLink({ icon, color, label }) {
               : theme.colors.gray[0],
         },
       })}
+      onClick={onClick}
     >
       <Group>
         <ThemeIcon color={color} variant="light">
           {icon}
         </ThemeIcon>
 
-        <Text size="sm">{label}</Text>
+        <Text size="sm">{data.Name}</Text>
       </Group>
     </UnstyledButton>
   );
 }
 
-const data = [
-  { icon: <GitPullRequest size={16} />, color: "blue", label: "Pull Requests" },
-  { icon: <AlertCircle size={16} />, color: "teal", label: "Open Issues" },
-  { icon: <Messages size={16} />, color: "violet", label: "Discussions" },
-  { icon: <Database size={16} />, color: "grape", label: "Databases" },
-];
-
-function MainLinks() {
-  const links = data.map((link) => <MainLink {...link} key={link.label} />);
-  return <div>{links}</div>;
-}
-
-export default MainLinks;
+export default Contact;
