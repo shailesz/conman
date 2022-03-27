@@ -27,7 +27,11 @@ function Home() {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [selectedContact, setSelectedContact] = React.useState({});
   const [opened, setOpened] = React.useState(false);
-  const [image, setImage] = React.useState({ base64: "", isLoaded: false });
+  const [image, setImage] = React.useState({
+    file: undefined,
+    isLoaded: false,
+  });
+  const [base64, setBase64] = React.useState("");
 
   React.useEffect(() => {
     getContacts().then(({ data: { results } }) => {
@@ -36,6 +40,19 @@ function Home() {
     });
   }, []);
 
+  React.useEffect(() => {
+    const getImageString = (file) => {
+      let reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => setBase64(reader.result);
+      reader.onerror = (error) => {};
+    };
+
+    if (image.isLoaded) {
+      getImageString(image.file);
+    }
+  }, [image]);
+
   const { getInputProps, onSubmit } = useForm({
     initialValues: {
       name: "",
@@ -43,19 +60,6 @@ function Home() {
       photograph: "",
     },
   });
-
-  const submitForm = (values) => {
-    addContact({ ...values }).then(() => {
-      setContacts([
-        ...contacts,
-        {
-          Name: values.name,
-          Phone: values.phone,
-          Photograph: values.photograph,
-        },
-      ]);
-    });
-  };
 
   return (
     <>
@@ -133,7 +137,19 @@ function Home() {
         title="Introduce yourself!"
       >
         <Box mx="auto">
-          <form onSubmit={onSubmit(submitForm)}>
+          <form
+            onSubmit={onSubmit((values) => {
+              const formData = new FormData();
+
+              formData.append("images", image.file);
+              formData.append("name", values.name);
+              formData.append("phone", values.phone);
+
+              addContact(formData).then(({ data: { data } }) => {
+                setContacts([...contacts, data]);
+              });
+            })}
+          >
             <TextInput
               required
               label="Name"
@@ -148,11 +164,7 @@ function Home() {
             />
             <Group mt="md">
               {image.isLoaded ? (
-                <Image
-                  radius="md"
-                  src={image.base64}
-                  alt="Random unsplash image"
-                />
+                <Image radius="md" src={base64} alt="Random unsplash image" />
               ) : (
                 <CMDropzone image={image} setImage={setImage} />
               )}

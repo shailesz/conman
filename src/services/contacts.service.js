@@ -19,7 +19,10 @@ export const addContact = async (data) => {
 
   try {
     const response = await axios.post(url, data, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("jwtToken")}` },
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
+        "Content-Type": "multipart/form-data",
+      },
     });
 
     return response;

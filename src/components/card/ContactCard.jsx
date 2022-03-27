@@ -13,7 +13,7 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 
-const ContactCard = ({ contact: { Name, Phone } }) => {
+const ContactCard = ({ contact: { name, phone, photograph } }) => {
   const theme = useMantineTheme();
 
   const secondaryColor =
@@ -23,25 +23,21 @@ const ContactCard = ({ contact: { Name, Phone } }) => {
     <div style={{ width: 340, margin: "auto" }}>
       <Card shadow="sm" p="lg">
         <Card.Section>
-          <Image
-            src="https://picsum.photos/340/160"
-            height={160}
-            alt="Norway"
-          />
+          <Image src={photograph} height={160} alt="Norway" />
         </Card.Section>
 
         <Group
           position="apart"
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
-          <Text weight={500}>{Name}</Text>
+          <Text weight={500}>{name}</Text>
           <Badge color="pink" variant="light">
             On Sale
           </Badge>
         </Group>
 
         <Text size="sm" style={{ color: secondaryColor, lineHeight: 1.5 }}>
-          {Phone}
+          {phone}
         </Text>
 
         <Button

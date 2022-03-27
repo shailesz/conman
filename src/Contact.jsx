@@ -26,7 +26,7 @@ function Contact({ icon, color, label, data, onClick = () => {} }) {
           {icon}
         </ThemeIcon>
 
-        <Text size="sm">{data.Name}</Text>
+        <Text size="sm">{data.name}</Text>
       </Group>
     </UnstyledButton>
   );

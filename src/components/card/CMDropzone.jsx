@@ -60,9 +60,7 @@ function CMDropzone({ image, setImage }) {
   return (
     <Dropzone
       onDrop={([file]) => {
-        getImageString(file, (base64) => {
-          setImage({ base64, isLoaded: true });
-        });
+        setImage({ file: file, isLoaded: true });
       }}
       onReject={(file) => console.log("rejected files", file)}
       maxSize={3 * 1024 ** 2}
