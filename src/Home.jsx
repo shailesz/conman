@@ -1,5 +1,5 @@
 import React from "react";
-import { SquarePlus, Logout, GitPullRequest } from "tabler-icons-react";
+import { SquarePlus, Logout, GitPullRequest, Check } from "tabler-icons-react";
 import {
   AppShell,
   Navbar,
@@ -21,17 +21,22 @@ import { addContact, getContacts } from "./services/contacts.service";
 import Contact from "./Contact";
 import ContactCard from "./components/card/ContactCard";
 import CMDropzone from "./components/card/CMDropzone";
+import { deleteContact, updateContact } from "./services/contacts.service";
+import { useNotifications } from "@mantine/notifications";
 
 function Home() {
   const [contacts, setContacts] = React.useState([]);
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [selectedContact, setSelectedContact] = React.useState({});
   const [opened, setOpened] = React.useState(false);
+  const [isEdit, setIsEdit] = React.useState(false);
   const [image, setImage] = React.useState({
     file: undefined,
     isLoaded: false,
   });
   const [base64, setBase64] = React.useState("");
+
+  const notifications = useNotifications();
 
   React.useEffect(() => {
     getContacts().then(({ data: { results } }) => {
@@ -53,13 +58,84 @@ function Home() {
     }
   }, [image]);
 
-  const { getInputProps, onSubmit } = useForm({
+  const { getInputProps, onSubmit, reset } = useForm({
     initialValues: {
       name: "",
       phone: "",
       photograph: "",
     },
   });
+
+  const closeModal = () => {
+    setOpened(false);
+    setIsEdit(false);
+    setImage({ file: undefined, isLoaded: false });
+    reset();
+  };
+
+  const deleteContactCallback = (selectedContact) => {
+    deleteContact(selectedContact.contactId);
+    setContacts(contacts.filter((contact) => contact !== selectedContact));
+    setSelectedContact({});
+  };
+
+  const isContactSelected = Object.keys(selectedContact).length > 0;
+
+  const addContactOnSubmit = (values) => {
+    const formData = new FormData();
+
+    formData.append("images", image.file);
+    formData.append("name", values.name);
+    formData.append("phone", values.phone);
+
+    addContact(formData).then(({ data: { data } }) => {
+      setContacts([...contacts, data]);
+      closeModal();
+    });
+  };
+
+  const editContactOnSubmit = (values) => {
+    const formData = new FormData();
+
+    formData.append("images", image.file);
+    formData.append("name", values.name);
+    formData.append("phone", values.phone);
+
+    updateContact(selectedContact.contactId, formData)
+      .then(({ data: { data } }) => {
+        const editedContacts = [...contacts];
+        editedContacts.splice(contacts.indexOf(selectedContact), 1, data);
+        setSelectedContact(editedContacts[contacts.indexOf(selectedContact)]);
+        setContacts(editedContacts);
+        closeModal();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const favouriteCallback = ({ contactId, favourite }) => {
+    const [favouriteContact] = contacts.filter(
+      (contact) => contact.contactId === parseInt(contactId)
+    );
+
+    const editedContacts = [...contacts];
+    editedContacts.splice(contacts.indexOf(favouriteContact), 1, {
+      ...favouriteContact,
+      favourite,
+    });
+    setContacts(editedContacts);
+
+    notifications.showNotification({
+      autoClose: 2000,
+      color: "teal",
+      title: "success",
+      message:
+        "Hey there, your contact was " +
+        (favourite ? "added to" : "removed from") +
+        " favourites! 🤘",
+    });
+  };
 
   return (
     <>
@@ -84,6 +160,7 @@ function Home() {
                   color="blue"
                   label="Pull Requests"
                   data={contact}
+                  favouriteCallback={favouriteCallback}
                   onClick={() => {
                     setSelectedContact(contact);
                   }}
@@ -129,26 +206,29 @@ function Home() {
           },
         })}
       >
-        <ContactCard contact={selectedContact} />
+        {isContactSelected ? (
+          <ContactCard
+            contact={selectedContact}
+            deleteContactCallback={deleteContactCallback}
+            editContactCallback={() => {
+              setIsEdit(true);
+              setOpened(true);
+            }}
+          />
+        ) : (
+          "nothing to show here..."
+        )}
       </AppShell>
       <Modal
         opened={opened}
-        onClose={() => setOpened(false)}
-        title="Introduce yourself!"
+        onClose={closeModal}
+        title={isEdit ? "Edit Contact" : "Add Contact"}
       >
         <Box mx="auto">
           <form
-            onSubmit={onSubmit((values) => {
-              const formData = new FormData();
-
-              formData.append("images", image.file);
-              formData.append("name", values.name);
-              formData.append("phone", values.phone);
-
-              addContact(formData).then(({ data: { data } }) => {
-                setContacts([...contacts, data]);
-              });
-            })}
+            onSubmit={onSubmit(
+              isEdit ? editContactOnSubmit : addContactOnSubmit
+            )}
           >
             <TextInput
               required
@@ -164,7 +244,7 @@ function Home() {
             />
             <Group mt="md">
               {image.isLoaded ? (
-                <Image radius="md" src={base64} alt="Random unsplash image" />
+                <Image radius="md" src={base64} alt="Contact image" />
               ) : (
                 <CMDropzone image={image} setImage={setImage} />
               )}

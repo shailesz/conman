@@ -13,7 +13,11 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 
-const ContactCard = ({ contact: { name, phone, photograph } }) => {
+const ContactCard = ({
+  contact,
+  deleteContactCallback,
+  editContactCallback,
+}) => {
   const theme = useMantineTheme();
 
   const secondaryColor =
@@ -23,21 +27,21 @@ const ContactCard = ({ contact: { name, phone, photograph } }) => {
     <div style={{ width: 340, margin: "auto" }}>
       <Card shadow="sm" p="lg">
         <Card.Section>
-          <Image src={photograph} height={160} alt="Norway" />
+          <Image src={contact.photograph} height={160} alt="Norway" />
         </Card.Section>
 
         <Group
           position="apart"
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
-          <Text weight={500}>{name}</Text>
+          <Text weight={500}>{contact.name}</Text>
           <Badge color="pink" variant="light">
-            On Sale
+            On favourite list
           </Badge>
         </Group>
 
         <Text size="sm" style={{ color: secondaryColor, lineHeight: 1.5 }}>
-          {phone}
+          {contact.phone}
         </Text>
 
         <Button
@@ -45,8 +49,20 @@ const ContactCard = ({ contact: { name, phone, photograph } }) => {
           color="blue"
           fullWidth
           style={{ marginTop: 14 }}
+          onClick={editContactCallback}
         >
           Edit Contact
+        </Button>
+        <Button
+          variant="light"
+          color="red"
+          fullWidth
+          style={{ marginTop: 14 }}
+          onClick={() => {
+            deleteContactCallback(contact);
+          }}
+        >
+          Delete Contact
         </Button>
       </Card>
     </div>

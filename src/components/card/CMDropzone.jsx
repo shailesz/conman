@@ -50,13 +50,6 @@ export const dropzoneChildren = (status, theme) => (
 function CMDropzone({ image, setImage }) {
   const theme = useMantineTheme();
 
-  const getImageString = (file, callback) => {
-    let reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => callback(reader.result);
-    reader.onerror = (error) => {};
-  };
-
   return (
     <Dropzone
       onDrop={([file]) => {

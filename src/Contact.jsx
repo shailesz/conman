@@ -1,7 +1,21 @@
 import React from "react";
 import { ThemeIcon, UnstyledButton, Group, Text } from "@mantine/core";
+import { Heart } from "tabler-icons-react";
+import { updateFavourite } from "./services/contacts.service";
 
-function Contact({ icon, color, label, data, onClick = () => {} }) {
+function Contact({
+  icon,
+  trailingIcon,
+  color,
+  label,
+  data,
+  favouriteCallback,
+  onClick = () => {},
+}) {
+  const [heartFillcolor, setHeartFillColor] = React.useState(
+    data.favourite ? "red" : "none"
+  );
+
   return (
     <UnstyledButton
       sx={(theme) => ({
@@ -21,12 +35,35 @@ function Contact({ icon, color, label, data, onClick = () => {} }) {
       })}
       onClick={onClick}
     >
-      <Group>
-        <ThemeIcon color={color} variant="light">
-          {icon}
-        </ThemeIcon>
+      <Group position="apart">
+        <Group>
+          <ThemeIcon color={color} variant="light">
+            {icon}
+          </ThemeIcon>
 
-        <Text size="sm">{data.name}</Text>
+          <Text size="sm">{data.name}</Text>
+        </Group>
+
+        <Heart
+          fill={heartFillcolor}
+          size={16}
+          onClick={(event) => {
+            event.stopPropagation();
+            updateFavourite(data.contactId, {
+              favourite: !data.favourite,
+            }).then(({ data: { data } }) => {
+              favouriteCallback(data);
+            });
+          }}
+          onMouseEnter={() => {
+            setHeartFillColor("pink");
+          }}
+          onMouseLeave={() => {
+            data.favourite
+              ? setHeartFillColor("red")
+              : setHeartFillColor("none");
+          }}
+        />
       </Group>
     </UnstyledButton>
   );
