@@ -33,7 +33,7 @@ function App() {
     },
   });
 
-  const submitForm = async (values) => {
+  const submitLogin = async (values) => {
     const url = "http://localhost:4000/signin";
     try {
       const {
@@ -47,11 +47,25 @@ function App() {
     }
   };
 
+  const submitSignup = async (values) => {
+    const url = "http://localhost:4000/signup";
+    try {
+      const {
+        data: {
+          data: { token },
+        },
+      } = await axios.post(url, values);
+      localStorage.setItem("jwtToken", token);
+    } catch (error) {
+      console.log({ error });
+    }
+  };
+
   return (
     <div className="signin-card-wrapper">
       <Card shadow="sm" p="lg">
         <Box sx={{ maxWidth: 300 }} mx="auto">
-          <form onSubmit={form.onSubmit(submitForm)}>
+          <form>
             <TextInput
               required
               label="Email"
@@ -66,10 +80,21 @@ function App() {
             />
 
             <Group position="center" mt="md">
-              <Button type variant="light" color="pink" size="md">
+              <Button
+                type
+                variant="light"
+                color="pink"
+                size="md"
+                onClick={form.onSubmit(submitLogin)}
+              >
                 Signin
               </Button>
-              <Button variant="light" color="grape" size="md">
+              <Button
+                variant="light"
+                color="grape"
+                size="md"
+                onClick={form.onSubmit(submitSignup)}
+              >
                 Signup
               </Button>
             </Group>

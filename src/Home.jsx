@@ -17,6 +17,7 @@ import {
 import { useForm } from "@mantine/form";
 import User from "./User";
 import { Logo } from "./Logo";
+import { useNavigate } from "react-router-dom";
 import { addContact, getContacts } from "./services/contacts.service";
 import Contact from "./Contact";
 import ContactCard from "./components/card/ContactCard";
@@ -37,6 +38,7 @@ function Home() {
   const [base64, setBase64] = React.useState("");
 
   const notifications = useNotifications();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     getContacts().then(({ data: { results } }) => {
@@ -186,7 +188,14 @@ function Home() {
                 >
                   <SquarePlus size={16} />
                 </ActionIcon>
-                <ActionIcon variant="default" onClick={() => {}} size={30}>
+                <ActionIcon
+                  variant="default"
+                  onClick={() => {
+                    localStorage.removeItem("jwtToken");
+                    navigate("/");
+                  }}
+                  size={30}
+                >
                   <Logout size={16} />
                 </ActionIcon>
               </Group>
