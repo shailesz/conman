@@ -2,7 +2,7 @@
   "name": "cm-app",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://shailesz.github.io/conman",
+  "homepage": "https://shailesz.github.io/conman/",
   "dependencies": {
     "@mantine/core": "^4.0.9",
     "@mantine/dropzone": "^4.0.9",
