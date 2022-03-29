@@ -8,12 +8,17 @@ import {
   Group,
   Box,
   PasswordInput,
+  Badge,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import axios from "axios";
 
 function App() {
   const [isAuth] = React.useState(localStorage.getItem("jwtToken"));
+  const [{ isError, message }, setMessage] = React.useState({
+    isError: false,
+    message: "",
+  });
   const navigate = useNavigate();
 
   React.useEffect(() => {
@@ -42,8 +47,13 @@ function App() {
         },
       } = await axios.post(url, values);
       localStorage.setItem("jwtToken", token);
+      navigate("/home");
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        setMessage({ isError: true, message: error.response.data.message });
+      } else {
+        console.log(error);
+      }
     }
   };
 
@@ -56,8 +66,13 @@ function App() {
         },
       } = await axios.post(url, values);
       localStorage.setItem("jwtToken", token);
+      navigate("/home");
     } catch (error) {
-      console.log({ error });
+      if (error.response) {
+        setMessage({ isError: true, message: error.response.data.message });
+      } else {
+        console.log(error);
+      }
     }
   };
 
@@ -65,6 +80,15 @@ function App() {
     <div className="signin-card-wrapper">
       <Card shadow="sm" p="lg">
         <Box sx={{ maxWidth: 300 }} mx="auto">
+          {isError ? (
+            <Box
+              sx={(theme) => ({
+                textAlign: "center",
+              })}
+            >
+              <Badge color="orange">{message}</Badge>
+            </Box>
+          ) : null}
           <form>
             <TextInput
               required

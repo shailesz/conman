@@ -1,5 +1,10 @@
 import React from "react";
-import { SquarePlus, Logout, GitPullRequest, Check } from "tabler-icons-react";
+import {
+  SquarePlus,
+  Logout,
+  GitPullRequest,
+  AlertCircle,
+} from "tabler-icons-react";
 import {
   AppShell,
   Navbar,
@@ -12,6 +17,7 @@ import {
   Button,
   Group,
   Box,
+  Alert,
   MenuLabel,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
@@ -128,6 +134,13 @@ function Home() {
     });
     setContacts(editedContacts);
 
+    if (favouriteContact.contactId === selectedContact.contactId) {
+      setSelectedContact({
+        ...favouriteContact,
+        favourite,
+      });
+    }
+
     notifications.showNotification({
       autoClose: 2000,
       color: "teal",
@@ -155,19 +168,29 @@ function Home() {
             })}
           >
             <Navbar.Section grow mt="xs">
-              {contacts.map((contact, index) => (
-                <Contact
-                  key={index}
-                  icon={<GitPullRequest size={16} />}
-                  color="blue"
-                  label="Pull Requests"
-                  data={contact}
-                  favouriteCallback={favouriteCallback}
-                  onClick={() => {
-                    setSelectedContact(contact);
-                  }}
-                />
-              ))}
+              {contacts.length ? (
+                contacts.map((contact, index) => (
+                  <Contact
+                    key={index}
+                    icon={<GitPullRequest size={16} />}
+                    color="blue"
+                    label="Pull Requests"
+                    data={contact}
+                    favouriteCallback={favouriteCallback}
+                    onClick={() => {
+                      setSelectedContact(contact);
+                    }}
+                  />
+                ))
+              ) : (
+                <Alert
+                  icon={<AlertCircle size={16} />}
+                  title="Hey There!"
+                  color="orange"
+                >
+                  Your contacts will show up here after you add some
+                </Alert>
+              )}
             </Navbar.Section>
             <Navbar.Section>
               <User />
@@ -225,7 +248,13 @@ function Home() {
             }}
           />
         ) : (
-          "nothing to show here..."
+          <Alert
+            icon={<AlertCircle size={16} />}
+            title="Selected contact goes here"
+            color="orange"
+          >
+            Your contact info will show up here once selected
+          </Alert>
         )}
       </AppShell>
       <Modal

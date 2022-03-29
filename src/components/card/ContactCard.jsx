@@ -35,9 +35,11 @@ const ContactCard = ({
           style={{ marginBottom: 5, marginTop: theme.spacing.sm }}
         >
           <Text weight={500}>{contact.name}</Text>
-          <Badge color="pink" variant="light">
-            On favourite list
-          </Badge>
+          {contact.favourite ? (
+            <Badge color="pink" variant="light">
+              On favourite list
+            </Badge>
+          ) : null}
         </Group>
 
         <Text size="sm" style={{ color: secondaryColor, lineHeight: 1.5 }}>
