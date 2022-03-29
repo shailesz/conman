@@ -11,8 +11,8 @@ ReactDOM.render(
     <NotificationsProvider>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="home" element={<Home />} />
+          <Route exact path="/" element={<App />} />
+          <Route path="/home" element={<Home />} />
         </Routes>
       </HashRouter>
     </NotificationsProvider>
