@@ -9,6 +9,7 @@ import {
   Box,
   PasswordInput,
   Badge,
+  Image,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import axios from "axios";
@@ -38,27 +39,8 @@ function App() {
     },
   });
 
-  const submitLogin = async (values) => {
-    const url = "http://localhost:4000/signin";
-    try {
-      const {
-        data: {
-          data: { token },
-        },
-      } = await axios.post(url, values);
-      localStorage.setItem("jwtToken", token);
-      navigate("/home");
-    } catch (error) {
-      if (error.response) {
-        setMessage({ isError: true, message: error.response.data.message });
-      } else {
-        console.log(error);
-      }
-    }
-  };
-
-  const submitSignup = async (values) => {
-    const url = "http://localhost:4000/signup";
+  const submitForm = async (values, isSignup = false) => {
+    const url = `http://localhost:4000/${isSignup ? "signup" : "signin"}`;
     try {
       const {
         data: {
@@ -78,6 +60,11 @@ function App() {
 
   return (
     <div className="signin-card-wrapper">
+      <Image
+        radius="md"
+        src={require("./images/home-banner-logo.jpeg")}
+        alt="conman logo"
+      />
       <Card shadow="sm" p="lg">
         <Box sx={{ maxWidth: 300 }} mx="auto">
           {isError ? (
@@ -109,7 +96,9 @@ function App() {
                 variant="light"
                 color="pink"
                 size="md"
-                onClick={form.onSubmit(submitLogin)}
+                onClick={form.onSubmit((value) => {
+                  submitForm(value, false);
+                })}
               >
                 Signin
               </Button>
@@ -117,7 +106,9 @@ function App() {
                 variant="light"
                 color="grape"
                 size="md"
-                onClick={form.onSubmit(submitSignup)}
+                onClick={form.onSubmit((value) => {
+                  submitForm(value, true);
+                })}
               >
                 Signup
               </Button>

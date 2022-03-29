@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  SquarePlus,
-  Logout,
-  AlertCircle,
-} from "tabler-icons-react";
+import { SquarePlus, Logout, AlertCircle } from "tabler-icons-react";
 import {
   AppShell,
   Navbar,
@@ -21,7 +17,8 @@ import { useForm } from "@mantine/form";
 import User from "./User";
 import { Logo } from "./Logo";
 import { useNavigate } from "react-router-dom";
-import { addContact, getContacts, getUser } from "./services/contacts.service";
+import { addContact, getContacts } from "./services/contacts.service";
+import { getUser } from "./services/user.service";
 import Contact from "./Contact";
 import ContactCard from "./components/card/ContactCard";
 import CMDropzone from "./components/card/CMDropzone";
@@ -30,8 +27,8 @@ import { useNotifications } from "@mantine/notifications";
 
 function Home() {
   const [contacts, setContacts] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [sortedContacts, setSortedContacts] = React.useState([]);
-  const [isLoaded, setIsLoaded] = React.useState(false);
   const [selectedContact, setSelectedContact] = React.useState([]);
   const [opened, setOpened] = React.useState(false);
   const [isEdit, setIsEdit] = React.useState(false);
@@ -47,11 +44,9 @@ function Home() {
 
   React.useEffect(() => {
     getContacts().then(({ data: { results } }) => {
-      setIsLoaded(true);
-
       const filteredFavourites = results
         .filter((contact) => contact.favourite)
-        .sort((a, b) => a.name > b.name);
+        .sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
 
       const sortedContacts = [
         ...filteredFavourites,
@@ -68,7 +63,7 @@ function Home() {
   React.useEffect(() => {
     const filteredFavourites = contacts
       .filter((contact) => contact.favourite)
-      .sort((a, b) => a.name > b.name);
+      .sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase());
 
     const sortedContacts = [
       ...filteredFavourites,
@@ -95,7 +90,11 @@ function Home() {
     initialValues: {
       name: "",
       phone: "",
-      photograph: "",
+    },
+
+    validate: {
+      name: (value) => (value ? null : "please enter a name"),
+      phone: (value) => (value ? null : "please enter a phone number"),
     },
   });
 
@@ -115,22 +114,29 @@ function Home() {
   const isContactSelected = Object.keys(selectedContact).length > 0;
 
   const addContactOnSubmit = (values) => {
+    setIsLoading(true);
     const formData = new FormData();
 
-    formData.append("images", image.file);
+    if (image.isLoaded) {
+      formData.append("images", image.file);
+    }
     formData.append("name", values.name);
     formData.append("phone", values.phone);
 
     addContact(formData).then(({ data: { data } }) => {
       setContacts([...contacts, data]);
       closeModal();
+      setIsLoading(false);
     });
   };
 
   const editContactOnSubmit = (values) => {
+    setIsLoading(true);
     const formData = new FormData();
 
-    formData.append("images", image.file);
+    if (image.isLoaded) {
+      formData.append("images", image.file);
+    }
     formData.append("name", values.name);
     formData.append("phone", values.phone);
 
@@ -141,6 +147,7 @@ function Home() {
         setSelectedContact(editedContacts[contacts.indexOf(selectedContact)]);
         setContacts(editedContacts);
         closeModal();
+        setIsLoading(false);
       })
       .catch((error) => {
         console.log(error);
@@ -192,7 +199,11 @@ function Home() {
               },
             })}
           >
-            <Navbar.Section grow mt="xs">
+            <Navbar.Section
+              sx={(theme) => ({ overflowY: "auto" })}
+              grow
+              mt="xs"
+            >
               {sortedContacts.length ? (
                 sortedContacts.map((contact, index) => (
                   <Contact
@@ -299,6 +310,7 @@ function Home() {
             />
             <TextInput
               required
+              type="number"
               label="Phone"
               placeholder="Enter phone"
               {...getInputProps("phone")}
@@ -311,7 +323,9 @@ function Home() {
               )}
             </Group>
             <Group position="right" mt="md">
-              <Button type="submit">Add Contact</Button>
+              <Button loading={isLoading} type="submit">
+                Add Contact
+              </Button>
             </Group>
           </form>
         </Box>
