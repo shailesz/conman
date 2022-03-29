@@ -1,20 +1,16 @@
 import React from "react";
-import { ThemeIcon, UnstyledButton, Group, Text } from "@mantine/core";
+import { ThemeIcon, UnstyledButton, Group, Text, Avatar } from "@mantine/core";
 import { Heart } from "tabler-icons-react";
 import { updateFavourite } from "./services/contacts.service";
 
-function Contact({
-  icon,
-  trailingIcon,
-  color,
-  label,
-  data,
-  favouriteCallback,
-  onClick = () => {},
-}) {
+function Contact({ color, data, favouriteCallback, onClick = () => {} }) {
   const [heartFillcolor, setHeartFillColor] = React.useState(
     data.favourite ? "red" : "none"
   );
+
+  React.useEffect(() => {
+    setHeartFillColor(data.favourite ? "red" : "none");
+  }, [data]);
 
   return (
     <UnstyledButton
@@ -37,9 +33,7 @@ function Contact({
     >
       <Group position="apart">
         <Group>
-          <ThemeIcon color={color} variant="light">
-            {icon}
-          </ThemeIcon>
+          <Avatar src={data.photograph} radius="xl" />
 
           <Text size="sm">{data.name}</Text>
         </Group>

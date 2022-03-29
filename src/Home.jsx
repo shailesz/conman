@@ -2,7 +2,6 @@ import React from "react";
 import {
   SquarePlus,
   Logout,
-  GitPullRequest,
   AlertCircle,
 } from "tabler-icons-react";
 import {
@@ -12,19 +11,17 @@ import {
   ActionIcon,
   Modal,
   TextInput,
-  Checkbox,
   Image,
   Button,
   Group,
   Box,
   Alert,
-  MenuLabel,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import User from "./User";
 import { Logo } from "./Logo";
 import { useNavigate } from "react-router-dom";
-import { addContact, getContacts } from "./services/contacts.service";
+import { addContact, getContacts, getUser } from "./services/contacts.service";
 import Contact from "./Contact";
 import ContactCard from "./components/card/ContactCard";
 import CMDropzone from "./components/card/CMDropzone";
@@ -33,8 +30,9 @@ import { useNotifications } from "@mantine/notifications";
 
 function Home() {
   const [contacts, setContacts] = React.useState([]);
+  const [sortedContacts, setSortedContacts] = React.useState([]);
   const [isLoaded, setIsLoaded] = React.useState(false);
-  const [selectedContact, setSelectedContact] = React.useState({});
+  const [selectedContact, setSelectedContact] = React.useState([]);
   const [opened, setOpened] = React.useState(false);
   const [isEdit, setIsEdit] = React.useState(false);
   const [image, setImage] = React.useState({
@@ -42,6 +40,7 @@ function Home() {
     isLoaded: false,
   });
   const [base64, setBase64] = React.useState("");
+  const [email, setEmail] = React.useState("");
 
   const notifications = useNotifications();
   const navigate = useNavigate();
@@ -49,9 +48,35 @@ function Home() {
   React.useEffect(() => {
     getContacts().then(({ data: { results } }) => {
       setIsLoaded(true);
-      setContacts(results);
+
+      const filteredFavourites = results
+        .filter((contact) => contact.favourite)
+        .sort((a, b) => a.name > b.name);
+
+      const sortedContacts = [
+        ...filteredFavourites,
+        ...results.filter((contact) => !contact.favourite),
+      ];
+
+      setContacts(sortedContacts);
+    });
+    getUser().then(({ data: email }) => {
+      setEmail(email);
     });
   }, []);
+
+  React.useEffect(() => {
+    const filteredFavourites = contacts
+      .filter((contact) => contact.favourite)
+      .sort((a, b) => a.name > b.name);
+
+    const sortedContacts = [
+      ...filteredFavourites,
+      ...contacts.filter((contact) => !contact.favourite),
+    ];
+
+    setSortedContacts(sortedContacts);
+  }, [contacts]);
 
   React.useEffect(() => {
     const getImageString = (file) => {
@@ -168,13 +193,11 @@ function Home() {
             })}
           >
             <Navbar.Section grow mt="xs">
-              {contacts.length ? (
-                contacts.map((contact, index) => (
+              {sortedContacts.length ? (
+                sortedContacts.map((contact, index) => (
                   <Contact
                     key={index}
-                    icon={<GitPullRequest size={16} />}
                     color="blue"
-                    label="Pull Requests"
                     data={contact}
                     favouriteCallback={favouriteCallback}
                     onClick={() => {
@@ -193,7 +216,7 @@ function Home() {
               )}
             </Navbar.Section>
             <Navbar.Section>
-              <User />
+              <User email={email} />
             </Navbar.Section>
           </Navbar>
         }
@@ -229,7 +252,7 @@ function Home() {
           root: {
             height: "100vh",
           },
-          body: { height: "100vh" },
+          body: { height: "calc(100vh - 60px)" },
           main: {
             backgroundColor:
               theme.colorScheme === "dark"
