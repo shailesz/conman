@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/conman/static/css/main.a0dec62b.css",
-    "main.js": "/conman/static/js/main.f10af140.js",
+    "main.js": "/conman/static/js/main.2d91ebef.js",
     "static/media/home-banner-logo.jpeg": "/conman/static/media/home-banner-logo.34efca1a6e36706b822d.jpeg",
     "index.html": "/conman/index.html",
     "main.a0dec62b.css.map": "/conman/static/css/main.a0dec62b.css.map",
-    "main.f10af140.js.map": "/conman/static/js/main.f10af140.js.map"
+    "main.2d91ebef.js.map": "/conman/static/js/main.2d91ebef.js.map"
   },
   "entrypoints": [
     "static/css/main.a0dec62b.css",
-    "static/js/main.f10af140.js"
+    "static/js/main.2d91ebef.js"
   ]
 }
