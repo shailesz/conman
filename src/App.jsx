@@ -41,8 +41,9 @@ function App() {
   });
 
   const submitForm = async (values, isSignup = false) => {
-    const url = api + isSignup ? "/signup" : "/signin";
+    const url = api + (isSignup ? "/signup" : "/signin");
     try {
+      console.log(url);
       const {
         data: {
           data: { token },

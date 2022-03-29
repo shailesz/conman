@@ -9,12 +9,12 @@ import { NotificationsProvider } from "@mantine/notifications";
 ReactDOM.render(
   <React.StrictMode>
     <NotificationsProvider>
-      <HashRouter>
+      <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<App />} />
           <Route path="/home" element={<Home />} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </NotificationsProvider>
   </React.StrictMode>,
   document.getElementById("root")
