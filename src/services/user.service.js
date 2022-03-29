@@ -1,7 +1,8 @@
 import axios from "axios";
+import { api } from "../constants/routes";
 
 export const getUser = async () => {
-  const url = "http://localhost:4000/user";
+  const url = api + "/user";
 
   try {
     const response = await axios.get(url, {

@@ -1,7 +1,8 @@
 import axios from "axios";
+import { api } from "../constants/routes";
 
 export const getContacts = async () => {
-  const url = "http://localhost:4000/contacts";
+  const url = api + "/contacts";
 
   try {
     const response = await axios.get(url, {
@@ -15,7 +16,7 @@ export const getContacts = async () => {
 };
 
 export const addContact = async (data) => {
-  const url = "http://localhost:4000/contacts";
+  const url = api + "/contacts";
 
   try {
     const response = await axios.post(url, data, {
@@ -32,7 +33,7 @@ export const addContact = async (data) => {
 };
 
 export const deleteContact = async (id) => {
-  const url = `http://localhost:4000/contacts/${id}`;
+  const url = api + "/contacts/" + id;
 
   try {
     const response = await axios.delete(url, {
@@ -48,7 +49,7 @@ export const deleteContact = async (id) => {
 };
 
 export const updateContact = async (id, data) => {
-  const url = `http://localhost:4000/contacts/${id}`;
+  const url = api + "/contacts/" + id;
 
   try {
     const response = await axios.put(url, data, {
@@ -65,7 +66,7 @@ export const updateContact = async (id, data) => {
 };
 
 export const updateFavourite = async (id, data) => {
-  const url = `http://localhost:4000/favourites/${id}`;
+  const url = api + "/favourites/" + id;
 
   try {
     const response = await axios.put(url, data, {

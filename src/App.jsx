@@ -13,6 +13,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import axios from "axios";
+import { api } from "./constants/routes";
 
 function App() {
   const [isAuth] = React.useState(localStorage.getItem("jwtToken"));
@@ -40,7 +41,7 @@ function App() {
   });
 
   const submitForm = async (values, isSignup = false) => {
-    const url = `http://localhost:4000/${isSignup ? "signup" : "signin"}`;
+    const url = api + isSignup ? "signup" : "signin";
     try {
       const {
         data: {
